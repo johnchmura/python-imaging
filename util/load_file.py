@@ -1,0 +1,1 @@
+# implement file loading, differentiating between dark, bias, flat, and science(?) images
