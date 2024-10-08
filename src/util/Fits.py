@@ -18,7 +18,8 @@ class Fits:
     Retrieve the FITS image's type. 
     @return str: Image type of FITS object
     
-    TODO: Might wanna take into account the different standards the 
+    TODO
+    Might wanna take into account the different standards the 
     images use, not always the case the key happens to be "TARGET"
     '''
     def fits_type(self) -> str:
