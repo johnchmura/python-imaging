@@ -11,14 +11,14 @@ def test_Fits():
     # check path validator function
     assert Fits.fits_path_check(r"C:\Users\bloon\Desktop\python-imaging\resource\dark_images\dark_3_000_1681706713.fits") == True
     assert Fits.fits_path_check(Constant.DARK_PATH) == False
-    assert Fits.fits_path_check(Constant.DARK_PATH + "/dark_3_000_1681706713.fits") == True
+    assert Fits.fits_path_check(Constant.DARK_PATH + "dark_3_000_1681706713.fits") == True
 
     # check constructor called with valid path
-    two = Fits(Constant.DARK_PATH + "/dark_3_000_1681706713.fits")
+    two = Fits(Constant.DARK_PATH + "dark_3_000_1681706713.fits")
     assert two.hdul != None
 
     # check FITS object is assigned to a path
-    one.fits_set(Constant.DARK_PATH + "/dark_3_000_1681706756.fits")
+    one.fits_set(Constant.DARK_PATH + "dark_3_000_1681706756.fits")
     assert one.hdul != None
 
     # check FITS image type
