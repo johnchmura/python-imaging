@@ -1,9 +1,8 @@
 # tests can go here, or not doesn't really matter
+from src.module import *
+from src.util import *
 
 def test_Fits():
-    from src.util import Fits
-    from src.util import Constant
-    
     # check constructor called with no path
     one = Fits()
     assert one.hdul == None
@@ -50,6 +49,13 @@ def test_Fits():
     for files in (Fits.batch_fits(Constant.DARK_PATH, Constant.HeaderObj.DARK_IMG)):
         print(files.path)
 
+# ngetes dark_img
+def test_dark_img():
+    fits_files = Fits.batch_fits(Constant.DARK_PATH, Constant.HeaderObj.DARK_IMG)
+    output_file = Constant.OUTPUT_PATH + "output.fits" # or change this to a path
+
+    median_stack_fits(fits_files, output_file)
 
 if __name__ == "__main__":
-    test_Fits()
+    #test_Fits()
+    test_dark_img()
