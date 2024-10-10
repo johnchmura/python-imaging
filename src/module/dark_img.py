@@ -9,7 +9,9 @@ MODIFY TO FOLLOW PROJECT STRUCTURE
 import numpy as np
 from astropy.io import fits
 
-def median_stack_fits(fits_files, output_file):
+from src.util import Fits
+
+def median_stack_fits(fits_files: list[Fits], output_file: str):
     # List to store data arrays from FITS files
     image_data = []
 
