@@ -14,11 +14,9 @@ class Fits:
     def __init__(self, path: str = None):
         self.path = None
         self.hdul = None
-
-        # by default, set is_output flag to True 
-        # (if path is not a FITS file, it is for output)
+        
         if (path):
-            self.fits_set(path, True)
+            self.fits_set(path)
 
     '''
     Retrieve the FITS image's type. 
@@ -27,22 +25,22 @@ class Fits:
     TODO:   Take into account different standards of storing 
             image type, not always the case it's in "TARGET"
     '''
-    def fits_type(self) -> str:
+    def fits_type(self):
             return self.hdul[0].header[Constant.HeaderObj.TYPE_KEY]
     
     '''
-    Set the object's FITS path
-    @arg path:      String of file path to FITS file
-    @arg is_output: Flag for setting FITS output
+    Create Fits object from given path
+    @arg path:  String of file path to FITS file
+    @arg hdu:   Optional HDU argument for creation of new FITS
     '''
-    def fits_set(self, path: str, is_output: bool = False):
+    def fits_set(self, path: str, hdu: fits.PrimaryHDU = None):
         # if given path points to existing FITS file, open HDUL
-        if (self.fits_path_check(path)):
+        if (self.path_check(path)):
             self.path = path
             self.hdul = fits.open(path)
-        elif is_output:
+        elif hdu:
             self.path = path
-            self.hdul = None
+            self.hdul = fits.HDUList([hdu])
         else:
             raise FileNotFoundError(f"Provided path {path} is not a FITS file")
 
@@ -61,17 +59,39 @@ class Fits:
                     be pulled from. Default is 0 (primary HDU)
     @return lst:    The data from the selected HDU
     '''
-    def get_data(self, index: int = 0) -> list:
+    def get_data(self, index: int = 0):
         if (index < 0):
             raise IndexError("Invalid negative index")
         return self.hdul[index].data
-        
+    
     '''
-    Method to check image type without making FITS object
-    @arg path: Complete path to FITS file
+    Write the current HDU list to a FITS file.
+    @arg path:      Path to where FITS is to be written to
+    @arg overwrite: Flag to overwrite existing files
+    '''
+    def write_to_disk(self, overwrite: bool = False):
+        fits.writeto(filename=self.path, data=self.get_data(), header=self.hdul[0].header, overwrite=overwrite)
+
+    '''
+    Static method to write data into new FITS file or overwrite
+    existing FITS file given in path
+    @arg path:      Path to where FITS is to be written to
+    @arg data:      List of data that will be storedi in this file
+    @return Fits:   Creates a new Fits object with hdul and path
     '''
     @staticmethod
-    def check_type(path: str) -> str:
+    def create_fits(path: str, data: list, write: bool = False):
+        new_obj = Fits()
+        new_obj.fits_set(path, fits.PrimaryHDU(data=data))
+        return new_obj
+
+    '''
+    Method to check image type without making FITS object
+    @arg path:      Complete path to FITS file
+    @return str:    Image type as string
+    '''
+    @staticmethod
+    def check_type(path: str):
         return fits.open(path)[0].header[Constant.HeaderObj.TYPE_KEY]
 
     '''
@@ -81,7 +101,7 @@ class Fits:
                     Fits file, false otherwise
     '''
     @staticmethod
-    def fits_path_check(path: str) -> bool:
+    def path_check(path: str):
         if os.path.isfile(path) and path.endswith('.fits'):
             return True
         return False
@@ -89,9 +109,9 @@ class Fits:
     '''
     Creates FITS object for every image found in given 
     directory and return a list of FITS objects
-    @arg path:  Path to directory with FITS images
-    @arg type:  Type of images to collect
-    @return:    List of FITS objects
+    @arg path:      Path to directory with FITS images
+    @arg type:      Type of images to collect
+    @return list:   List of FITS objects
     '''
     @staticmethod
     def batch_fits(path: str, type: str):
@@ -100,7 +120,7 @@ class Fits:
         if (os.path.isdir(path)):
             for files in os.listdir(path):
                 # find FITS with specified type
-                if (Fits.fits_path_check(path + files) and type == Fits.check_type(path + files)):
+                if (Fits.path_check(path + files) and type == Fits.check_type(path + files)):
                     fits_list.append(Fits(path + files))
            
             return fits_list

@@ -1,11 +1,12 @@
-'''
-COPY PASTED THIS FROM LAST MEETING
-MODIFY TO FOLLOW PROJECT STRUCTURE
-'''
 import numpy as np
 from src.util import *
-from astropy.io import fits
 
+'''
+Create the master dark image from a list of FITS images
+@arg fits_file:     List of FITS objects to be median-stacked
+@arg output_file:   Path to where the output is going to be 
+                    written
+'''
 def median_stack_fits(fits_files: list[Fits], output_file: str):
     # List to store data arrays from FITS files
     image_data = []
@@ -17,8 +18,5 @@ def median_stack_fits(fits_files: list[Fits], output_file: str):
     # Stack the images and compute the median along the stack axis
     stacked_median = np.median(np.array(image_data), axis=0)
 
-    # Create a new FITS HDU (Header/Data Unit) to hold the median image
-    hdu = fits.PrimaryHDU(stacked_median)
-
-    # Write the median image to the output FITS file
-    hdu.writeto(output_file, overwrite=True)
+    # Return new Fits object with the calculated data
+    return Fits.create_fits(output_file, stacked_median, True)

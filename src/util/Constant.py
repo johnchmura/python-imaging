@@ -8,6 +8,7 @@ class Constant:
         BIAS_IMG = "bias"
         SCIENCE_IMG = "science"
         
+        # Not all images use TARGET as reference to type
         TYPE_KEY = "TARGET"
     
 
